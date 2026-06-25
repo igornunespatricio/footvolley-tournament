@@ -1,0 +1,111 @@
+.standings-container {
+  background: var(--bg-white);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 2rem;
+}
+
+.standings-container h3 {
+  font-size: 1.3rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.standings-table {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.standings-table thead {
+  background-color: var(--primary);
+  color: white;
+}
+
+.standings-table th {
+  padding: 1rem;
+  text-align: left;
+  font-weight: 600;
+  font-size: 0.95rem;
+  letter-spacing: 0.5px;
+  text-transform: uppercase;
+}
+
+.standings-table tbody tr {
+  border-bottom: 1px solid var(--border-color);
+  transition: background-color 0.2s ease;
+}
+
+.standings-table tbody tr:hover {
+  background-color: var(--bg-light);
+}
+
+.standing-row {
+  padding: 0;
+}
+
+.standing-row.position-1 {
+  background-color: rgba(168, 85, 247, 0.05);
+  font-weight: 600;
+}
+
+.standing-row.position-1 .position-cell {
+  color: var(--primary);
+}
+
+.standings-table td {
+  padding: 1rem;
+  color: var(--text-primary);
+}
+
+.position-cell {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-secondary);
+  width: 50px;
+}
+
+.team-cell {
+  font-weight: 600;
+  max-width: 250px;
+  word-break: break-word;
+}
+
+.stat-cell {
+  text-align: center;
+  font-weight: 500;
+  width: 50px;
+}
+
+.points {
+  font-weight: 700;
+  color: var(--primary);
+  font-size: 1.1rem;
+}
+
+.standings-empty {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-size: 1rem;
+}
+
+@media (max-width: 768px) {
+  .standings-table {
+    font-size: 0.85rem;
+  }
+
+  .standings-table th,
+  .standings-table td {
+    padding: 0.75rem 0.5rem;
+  }
+
+  .team-cell {
+    max-width: 150px;
+  }
+
+  .stat-cell,
+  .position-cell {
+    width: 40px;
+  }
+}

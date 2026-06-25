@@ -1,0 +1,132 @@
+.group-stage {
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.group-stage h2 {
+  font-size: 2rem;
+  color: var(--text-primary);
+  margin-bottom: 1.5rem;
+}
+
+.group-selector {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background: var(--bg-white);
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.group-selector label {
+  font-weight: 600;
+  color: var(--text-primary);
+}
+
+.group-selector select {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 4px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.group-selector select:hover {
+  border-color: var(--primary);
+}
+
+.group-selector select:focus {
+  outline: none;
+  border-color: var(--primary);
+  box-shadow: 0 0 0 3px rgba(168, 85, 247, 0.1);
+}
+
+.btn-primary {
+  padding: 0.75rem 1.5rem;
+  background-color: var(--primary);
+  color: white;
+  border: none;
+  border-radius: 6px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: var(--shadow-sm);
+  margin-bottom: 1.5rem;
+}
+
+.btn-primary:hover {
+  background-color: var(--primary-dark);
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+.group-content {
+  display: grid;
+  gap: 2rem;
+}
+
+.matches-section {
+  background: var(--bg-white);
+  padding: 1.5rem;
+  border-radius: 8px;
+  box-shadow: var(--shadow-sm);
+}
+
+.matches-section h3 {
+  font-size: 1.3rem;
+  color: var(--text-primary);
+  margin-bottom: 1rem;
+}
+
+.matches-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 1rem;
+}
+
+.no-matches,
+.no-data {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+  font-size: 1.1rem;
+}
+
+.loading {
+  text-align: center;
+  padding: 2rem;
+  color: var(--text-secondary);
+}
+
+@media (max-width: 768px) {
+  .group-stage h2 {
+    font-size: 1.5rem;
+  }
+
+  .group-selector {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .matches-grid {
+    grid-template-columns: 1fr;
+  }
+}

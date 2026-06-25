@@ -1,0 +1,156 @@
+.match-card {
+  background: var(--bg-white);
+  border: 2px solid var(--border-color);
+  border-radius: 8px;
+  padding: 1rem;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.match-card:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-4px);
+}
+
+.match-card.pending {
+  border-left: 5px solid var(--warning);
+}
+
+.match-card.in-progress {
+  border-left: 5px solid var(--info);
+  background: rgba(59, 130, 246, 0.02);
+}
+
+.match-card.completed {
+  border-left: 5px solid var(--success);
+  background: rgba(16, 185, 129, 0.02);
+}
+
+.match-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.status-badge {
+  display: inline-block;
+  padding: 0.25rem 0.75rem;
+  border-radius: 20px;
+  font-size: 0.75rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.status-badge.pending {
+  background-color: rgba(245, 158, 11, 0.1);
+  color: #92400e;
+}
+
+.status-badge.in-progress {
+  background-color: rgba(59, 130, 246, 0.1);
+  color: #1e40af;
+}
+
+.status-badge.completed {
+  background-color: rgba(16, 185, 129, 0.1);
+  color: #065f46;
+}
+
+.match-body {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 1rem;
+  padding: 1rem 0;
+  border-top: 1px solid var(--border-color);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.team-section {
+  flex: 1;
+  text-align: center;
+}
+
+.team-name {
+  font-size: 0.9rem;
+  color: var(--text-secondary);
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  word-break: break-word;
+}
+
+.score {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--primary);
+}
+
+.vs-divider {
+  color: var(--text-secondary);
+  font-weight: 600;
+  padding: 0 0.5rem;
+}
+
+.match-actions {
+  display: flex;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.btn-edit,
+.btn-delete {
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--border-color);
+  background: var(--bg-white);
+  border-radius: 4px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.btn-edit {
+  color: var(--info);
+  border-color: var(--info);
+}
+
+.btn-edit:hover {
+  background-color: rgba(59, 130, 246, 0.1);
+}
+
+.btn-delete {
+  color: var(--danger);
+  border-color: var(--danger);
+}
+
+.btn-delete:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+}
+
+@media (max-width: 600px) {
+  .match-card {
+    padding: 0.75rem;
+  }
+
+  .score {
+    font-size: 1.5rem;
+  }
+
+  .match-body {
+    gap: 0.5rem;
+  }
+
+  .match-actions {
+    flex-wrap: wrap;
+  }
+
+  .btn-edit,
+  .btn-delete {
+    flex: 1;
+    min-width: 80px;
+  }
+}
