@@ -1,0 +1,65 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: footvolley-postgres
+    environment:
+      POSTGRES_USER: ${DB_USER:-footvolley}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-footvolley123}
+      POSTGRES_DB: ${DB_NAME:-footvolley}
+    ports:
+      - "${DB_PORT:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-footvolley}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - tournament-network
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: footvolley-backend
+    environment:
+      DATABASE_URL: postgresql://${DB_USER:-footvolley}:${DB_PASSWORD:-footvolley123}@postgres:5432/${DB_NAME:-footvolley}
+      PORT: ${BACKEND_PORT:-3001}
+      NODE_ENV: ${NODE_ENV:-development}
+    ports:
+      - "${BACKEND_PORT:-3001}:${BACKEND_PORT:-3001}"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    volumes:
+      - ./backend:/app
+      - /app/node_modules
+    networks:
+      - tournament-network
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: footvolley-frontend
+    environment:
+      VITE_API_URL: ${VITE_API_URL:-http://localhost:3001/api}
+    ports:
+      - "${FRONTEND_PORT:-3000}:80"
+    depends_on:
+      - backend
+    networks:
+      - tournament-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+    driver: local
+
+networks:
+  tournament-network:
+    driver: bridge
