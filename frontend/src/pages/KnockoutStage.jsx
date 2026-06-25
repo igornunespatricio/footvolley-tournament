@@ -10,9 +10,11 @@ export const KnockoutStage = ({ groups, onKnockoutUpdated }) => {
     semifinal: [],
     final: [],
   })
+  const [qualifiedTeams, setQualifiedTeams] = useState([])
   const [isModalOpen, setIsModalOpen] = useState(false)
   const [editingMatch, setEditingMatch] = useState(null)
   const [loading, setLoading] = useState(false)
+  const [showBracketMessage, setShowBracketMessage] = useState(false)
 
   useKnockoutUpdates((data) => {
     loadKnockoutMatches()
@@ -20,6 +22,7 @@ export const KnockoutStage = ({ groups, onKnockoutUpdated }) => {
 
   useEffect(() => {
     loadKnockoutMatches()
+    loadQualifiedTeams()
   }, [])
 
   const loadKnockoutMatches = async () => {
@@ -34,6 +37,35 @@ export const KnockoutStage = ({ groups, onKnockoutUpdated }) => {
       })
     } catch (error) {
       console.error('Failed to load knockout matches:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const loadQualifiedTeams = async () => {
+    try {
+      const response = await knockoutService.getQualifiedTeams()
+      setQualifiedTeams(response.data || [])
+    } catch (error) {
+      console.error('Failed to load qualified teams:', error)
+    }
+  }
+
+  const handleCreateBracket = async () => {
+    if (!window.confirm('This will auto-generate the knockout bracket based on group standings. Continue?')) {
+      return
+    }
+
+    setLoading(true)
+    try {
+      const response = await knockoutService.createBracket()
+      setShowBracketMessage(true)
+      setTimeout(() => setShowBracketMessage(false), 4000)
+      loadKnockoutMatches()
+      alert(response.data.message)
+    } catch (error) {
+      console.error('Failed to create knockout bracket:', error)
+      alert(`Failed to create bracket: ${error.response?.data?.error || error.message}`)
     } finally {
       setLoading(false)
     }
@@ -102,7 +134,32 @@ export const KnockoutStage = ({ groups, onKnockoutUpdated }) => {
 
   return (
     <div className="knockout-stage">
-      <h2>Knockout Stage</h2>
+      <h2>Knockout Stage 🏆</h2>
+
+      {qualifiedTeams.length >= 4 && (
+        <div className="bracket-controls">
+          <button 
+            className="btn-generate-bracket"
+            onClick={handleCreateBracket}
+            disabled={loading}
+          >
+            ⚡ Auto-Generate Bracket from Group Standings
+          </button>
+          
+          {qualifiedTeams.length > 0 && (
+            <div className="qualified-teams-preview">
+              <h4>Qualified Teams ({qualifiedTeams.length}):</h4>
+              <div className="teams-list">
+                {qualifiedTeams.map((team, idx) => (
+                  <span key={team.team_id} className="team-badge">
+                    {team.group_name} • {team.team_name}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+      )}
 
       <div className="knockout-container">
         {/* Semifinals */}

@@ -34,6 +34,8 @@ export const knockoutService = {
   update: (id, scoreA, scoreB, status, winnerId = null) =>
     api.put(`/knockout-matches/${id}`, { scoreA, scoreB, status, winnerId }),
   delete: (id) => api.delete(`/knockout-matches/${id}`),
+  getQualifiedTeams: () => api.get('/qualified-teams'),
+  createBracket: () => api.post('/create-knockout-bracket'),
 }
 
 export default api

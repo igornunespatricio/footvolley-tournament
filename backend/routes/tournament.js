@@ -1,6 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const tournamentController = require('../controllers/tournament');
+const knockoutController = require('../controllers/knockout');
 
 // Groups
 router.get('/groups', tournamentController.getAllGroups);
@@ -20,5 +21,9 @@ router.get('/knockout-matches', tournamentController.getKnockoutMatches);
 router.post('/knockout-matches', tournamentController.createKnockoutMatch);
 router.put('/knockout-matches/:id', tournamentController.updateKnockoutMatch);
 router.delete('/knockout-matches/:id', tournamentController.deleteKnockoutMatch);
+
+// Knockout Bracket Generation
+router.get('/qualified-teams', knockoutController.getQualifiedTeams);
+router.post('/create-knockout-bracket', knockoutController.createKnockoutBracket);
 
 module.exports = router;
