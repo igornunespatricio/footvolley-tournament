@@ -19,7 +19,13 @@ cp .env.example .env
 
 Edit `.env` with your PostgreSQL connection details:
 ```
-DATABASE_URL=postgresql://username:password@localhost:5432/footvolley
+DB_USER=footvolley
+DB_PASSWORD=your_password
+DB_NAME=footvolley
+DB_HOST=localhost
+DB_PORT=5432
+# Optional fallback when DB_* values are not set
+DATABASE_URL=postgresql://footvolley:your_password@localhost:5432/footvolley
 PORT=3001
 NODE_ENV=development
 ```
@@ -41,6 +47,8 @@ This will create all tables:
 - `standings` - Team standings
 - `knockout_matches` - Knockout stage matches
 
+The backend now also runs this initialization automatically on startup when the database is empty, which lets `docker compose up` bring up a fresh environment without a separate migration step.
+
 ### 5. Seed Tournament Data
 ```bash
 npm run seed
@@ -57,7 +65,7 @@ This will populate:
 npm run dev
 ```
 
-Server will start on `http://localhost:3001`
+Server will start on `http://localhost:3001` and will seed the default tournament data automatically if the `groups` table is empty.
 
 ## API Endpoints
 

@@ -1,8 +1,8 @@
 import { useState } from 'react'
-import { StandingsTable } from './StandingsTable'
-import { MatchCard } from './MatchCard'
-import { MatchModal } from './MatchModal'
-import { matchService } from '../services/api'
+import { StandingsTable } from '../components/StandingsTable'
+import { MatchCard } from '../components/MatchCard'
+import { MatchModal } from '../components/MatchModal'
+import { matchService, groupService } from '../services/api'
 import { useMatchUpdates } from '../hooks/useSocket'
 import '../styles/GroupStage.css'
 
@@ -23,11 +23,11 @@ export const GroupStage = ({ groups, onMatchUpdated }) => {
   const loadGroupDetails = async (groupId) => {
     setLoading(true)
     try {
-      const response = await matchService.getGroupMatches(groupId)
-      // In a real app, you'd fetch standings too
+      const response = await groupService.getDetails(groupId)
       setGroupDetails({
         groupId,
-        matches: response.data,
+        matches: response.data.matches,
+        teams: response.data.teams,
       })
     } catch (error) {
       console.error('Failed to load group details:', error)

@@ -44,9 +44,8 @@
 
 1. **Configure environment:**
    ```bash
-   cp .env.production .env
-   # Edit .env with your configuration
-   nano .env
+   # Edit .env.production with your configuration
+   nano .env.production
    ```
 
 2. **Deploy:**
@@ -82,6 +81,8 @@ docker-compose down
 # Start all services
 docker-compose up -d
 ```
+
+**Important:** If you change `DB_USER`, `DB_PASSWORD`, or `DB_NAME` after the database volume already exists, Docker will keep the old PostgreSQL credentials in `postgres_data`. In that case, either restore the previous values or recreate the volume with `docker-compose --env-file .env.production down -v` before redeploying.
 
 ### Option 2: Vercel + Render
 
@@ -174,9 +175,9 @@ docker-compose up -d
 ### With Docker:
 ```bash
 git pull
-docker-compose build
-docker-compose up -d
-docker-compose exec backend npm run migrate
+docker-compose --env-file .env.production build
+docker-compose --env-file .env.production up -d
+docker-compose --env-file .env.production exec -T backend npm run migrate
 ```
 
 ### With Traditional Server:

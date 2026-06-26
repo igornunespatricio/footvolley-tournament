@@ -72,6 +72,8 @@ npm run dev
 The frontend will be available at `http://localhost:3000`
 The API will be available at `http://localhost:3001`
 
+When the backend starts against an empty PostgreSQL database, it now creates the schema and seeds the default tournament data automatically. That includes the Docker Compose flow on a fresh volume.
+
 ## Development Phases
 
 - [x] Phase 1: Project Setup & Database Schema

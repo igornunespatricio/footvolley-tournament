@@ -12,6 +12,12 @@ const api = axios.create({
 export const groupService = {
   getAll: () => api.get('/groups'),
   getById: (id) => api.get(`/groups/${id}`),
+  getDetails: (id) => api.get(`/groups/${id}`),
+}
+
+export const teamService = {
+  getByGroup: (groupId) => api.get(`/groups/${groupId}`),
+  getAll: () => api.get('/teams'),
 }
 
 export const matchService = {

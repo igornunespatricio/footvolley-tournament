@@ -1,6 +1,15 @@
 const Tournament = require('../models/tournament');
 const { broadcastMatchUpdate, broadcastKnockoutUpdate, broadcastStandingsUpdate } = require('../middleware/broadcast');
 
+exports.getAllTeams = async (req, res) => {
+  try {
+    const teams = await Tournament.getAllTeams();
+    res.json(teams);
+  } catch (err) {
+    res.status(500).json({ error: err.message });
+  }
+};
+
 // Group handlers
 exports.getAllGroups = async (req, res) => {
   try {
@@ -145,13 +154,17 @@ exports.updateKnockoutMatch = async (req, res) => {
     
     const match = await Tournament.updateKnockoutMatch(id, scoreA, scoreB, status, winnerId || null);
     
+    // Handle match progression (QF → SF → F)
+    const progressionResult = await Tournament.handleKnockoutMatchCompletion(id);
+    
     // Broadcast update via WebSocket
     broadcastKnockoutUpdate(req.io, {
       type: 'knockout-updated',
       match,
+      progression: progressionResult,
     });
     
-    res.json(match);
+    res.json({ match, progression: progressionResult });
   } catch (err) {
     res.status(500).json({ error: err.message });
   }

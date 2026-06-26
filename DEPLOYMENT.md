@@ -17,6 +17,11 @@ cp .env.example .env
 
 Edit `.env`:
 ```
+DB_USER=postgres
+DB_PASSWORD=password
+DB_NAME=footvolley
+DB_HOST=localhost
+DB_PORT=5432
 DATABASE_URL=postgresql://postgres:password@localhost:5432/footvolley
 PORT=3001
 NODE_ENV=development
@@ -162,11 +167,11 @@ proxy: {
 
 Create `docker-compose.yml`:
 ```yaml
-version: '3.8'
 services:
   postgres:
     image: postgres:15
     environment:
+      POSTGRES_USER: footvolley
       POSTGRES_PASSWORD: footvolley
       POSTGRES_DB: footvolley
     ports:
@@ -177,7 +182,11 @@ services:
     ports:
       - "3001:3001"
     environment:
-      DATABASE_URL: postgresql://postgres:footvolley@postgres:5432/footvolley
+      DB_USER: footvolley
+      DB_PASSWORD: footvolley
+      DB_NAME: footvolley
+      DB_HOST: postgres
+      DB_PORT: 5432
       NODE_ENV: production
     depends_on:
       - postgres
@@ -192,7 +201,7 @@ services:
 
 Run:
 ```bash
-docker-compose up
+docker-compose --env-file .env.production up
 ```
 
 ### Option 3: Traditional Server (Linux)

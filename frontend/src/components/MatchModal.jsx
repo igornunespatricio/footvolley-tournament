@@ -1,36 +1,42 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import '../styles/Modal.css'
 
-export const MatchModal = ({ isOpen, groupId, teams, onClose, onSubmit, initialData = null }) => {
-  const [formData, setFormData] = useState({
-    teamAId: initialData?.team_a_id || '',
-    teamBId: initialData?.team_b_id || '',
-    scoreA: initialData?.score_a || 0,
-    scoreB: initialData?.score_b || 0,
-    status: initialData?.status || 'pending',
+export const MatchModal = ({ isOpen, groupId, stage, teams, onClose, onSubmit, initialData = null }) => {
+  const isKnockout = !!stage
+
+  const buildFormData = (data) => ({
+    teamAId: data?.team_a_id || '',
+    teamBId: data?.team_b_id || '',
+    scoreA: data?.score_a ?? 0,
+    scoreB: data?.score_b ?? 0,
+    status: data?.status || 'pending',
+    winnerId: data?.winner_id || '',
   })
+
+  const [formData, setFormData] = useState(() => buildFormData(initialData))
+
+  useEffect(() => {
+    setFormData(buildFormData(initialData))
+  }, [initialData])
 
   const handleChange = (e) => {
     const { name, value } = e.target
+    const isNumeric = name.includes('score') || name.includes('Id')
     setFormData(prev => ({
       ...prev,
-      [name]: name.includes('score') || name.includes('Id') ? parseInt(value) : value,
+      [name]: isNumeric ? (value !== '' ? parseInt(value) : '') : value,
     }))
   }
 
   const handleSubmit = (e) => {
     e.preventDefault()
     onSubmit(formData)
-    setFormData({
-      teamAId: '',
-      teamBId: '',
-      scoreA: 0,
-      scoreB: 0,
-      status: 'pending',
-    })
+    setFormData(buildFormData(null))
   }
 
   if (!isOpen) return null
+
+  const selectedTeams = teams.filter(t => t.id === formData.teamAId || t.id === formData.teamBId)
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -107,6 +113,23 @@ export const MatchModal = ({ isOpen, groupId, teams, onClose, onSubmit, initialD
               <option value="completed">Completed</option>
             </select>
           </div>
+
+          {isKnockout && formData.status === 'completed' && (
+            <div className="form-group">
+              <label>Winner</label>
+              <select
+                name="winnerId"
+                value={formData.winnerId}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select Winner</option>
+                {selectedTeams.map(team => (
+                  <option key={team.id} value={team.id}>{team.name}</option>
+                ))}
+              </select>
+            </div>
+          )}
 
           <div className="modal-actions">
             <button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>

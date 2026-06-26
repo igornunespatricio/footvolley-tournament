@@ -3,7 +3,7 @@
 # Production Deployment Script
 # This script handles complete deployment to production
 
-set -e
+set -euo pipefail
 
 echo "🚀 ASC Championship - Production Deployment"
 echo "=============================================="
@@ -27,28 +27,34 @@ case $DEPLOYMENT_ENV in
         exit 1
     fi
     
-    # Check if docker-compose is installed
-    if ! command -v docker-compose &> /dev/null; then
+    # Resolve Docker Compose command
+    if command -v docker-compose &> /dev/null; then
+        COMPOSE_CMD=(docker-compose)
+    elif docker compose version &> /dev/null; then
+        COMPOSE_CMD=(docker compose)
+    else
         echo -e "${RED}❌ Docker Compose is not installed${NC}"
         exit 1
     fi
     
-    # Load environment variables
     if [ -f .env.production ]; then
         echo -e "${YELLOW}Loading production environment...${NC}"
-        export $(cat .env.production | grep -v '#' | xargs)
     else
         echo -e "${RED}❌ .env.production file not found${NC}"
-        echo "Copy .env.production.example to .env.production and configure"
+        echo "Create .env.production with DB_USER, DB_PASSWORD, DB_NAME, and deployment ports before retrying."
         exit 1
     fi
+
+    compose() {
+        "${COMPOSE_CMD[@]}" --env-file .env.production "$@"
+    }
     
     # Build and start containers
     echo -e "${YELLOW}Building Docker images...${NC}"
-    docker-compose build
+    compose build
     
     echo -e "${YELLOW}Starting services...${NC}"
-    docker-compose up -d
+    compose up -d
     
     # Wait for services to be ready
     echo -e "${YELLOW}Waiting for services to start...${NC}"
@@ -56,24 +62,29 @@ case $DEPLOYMENT_ENV in
     
     # Run migrations
     echo -e "${YELLOW}Running database migrations...${NC}"
-    docker-compose exec backend npm run migrate || true
+    if ! compose exec -T backend npm run migrate; then
+        echo -e "${RED}❌ Database migration failed${NC}"
+        echo "If the error says password authentication failed, your existing postgres_data volume was initialized with different DB_* credentials."
+        echo "Either restore the original DB_* values in .env.production or recreate the database volume with: ${COMPOSE_CMD[*]} --env-file .env.production down -v"
+        exit 1
+    fi
     
     # Check service health
     echo -e "${YELLOW}Checking service health...${NC}"
     
-    if docker-compose exec -T postgres pg_isready -U footvolley &> /dev/null; then
+    if compose exec -T postgres sh -lc 'PGPASSWORD="$POSTGRES_PASSWORD" psql -v ON_ERROR_STOP=1 -U "$POSTGRES_USER" -d "$POSTGRES_DB" -tAc "SELECT 1" >/dev/null'; then
         echo -e "${GREEN}✅ Database is ready${NC}"
     else
         echo -e "${RED}❌ Database failed to start${NC}"
-        docker-compose logs postgres
+        compose logs postgres
         exit 1
     fi
     
-    if curl -s http://localhost:3001/health > /dev/null; then
+    if curl -fsS http://localhost:3001/health > /dev/null; then
         echo -e "${GREEN}✅ Backend is ready${NC}"
     else
         echo -e "${RED}❌ Backend failed to start${NC}"
-        docker-compose logs backend
+        compose logs backend
         exit 1
     fi
     
@@ -84,9 +95,9 @@ case $DEPLOYMENT_ENV in
     echo "  Backend API: http://localhost:3001"
     echo ""
     echo "Useful commands:"
-    echo "  View logs: docker-compose logs -f"
-    echo "  Stop: docker-compose down"
-    echo "  Restart: docker-compose restart"
+    echo "  View logs: ${COMPOSE_CMD[*]} --env-file .env.production logs -f"
+    echo "  Stop: ${COMPOSE_CMD[*]} --env-file .env.production down"
+    echo "  Restart: ${COMPOSE_CMD[*]} --env-file .env.production restart"
     ;;
     
   vercel)

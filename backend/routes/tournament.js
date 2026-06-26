@@ -7,6 +7,9 @@ const knockoutController = require('../controllers/knockout');
 router.get('/groups', tournamentController.getAllGroups);
 router.get('/groups/:groupId', tournamentController.getGroupDetails);
 
+// Teams
+router.get('/teams', tournamentController.getAllTeams);
+
 // Group Matches
 router.get('/groups/:groupId/matches', tournamentController.getGroupMatches);
 router.post('/matches', tournamentController.createMatch);

@@ -5,6 +5,8 @@ const cors = require('cors');
 const bodyParser = require('body-parser');
 require('dotenv').config();
 
+const pool = require('./db');
+const { ensureDatabaseReady } = require('./scripts/bootstrap');
 const tournamentRoutes = require('./routes/tournament');
 
 const app = express();
@@ -31,8 +33,14 @@ app.use((req, res, next) => {
 app.use('/api', tournamentRoutes);
 
 // Health check
-app.get('/health', (req, res) => {
-  res.json({ status: 'ok' });
+app.get('/health', async (req, res) => {
+  try {
+    await pool.query('SELECT 1');
+    res.json({ status: 'ok', database: 'ok' });
+  } catch (err) {
+    console.error('Health check failed:', err.message);
+    res.status(503).json({ status: 'error', database: 'unavailable' });
+  }
 });
 
 // Socket.io connection handling
@@ -71,9 +79,18 @@ app.use((err, req, res, next) => {
 
 const PORT = process.env.PORT || 3001;
 
-server.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-  console.log(`📡 WebSocket server ready`);
+const startServer = async () => {
+  await ensureDatabaseReady();
+
+  server.listen(PORT, () => {
+    console.log(`🚀 Server running on http://localhost:${PORT}`);
+    console.log('📡 WebSocket server ready');
+  });
+};
+
+startServer().catch((err) => {
+  console.error('❌ Failed to initialize server:', err);
+  process.exit(1);
 });
 
 module.exports = { app, io };

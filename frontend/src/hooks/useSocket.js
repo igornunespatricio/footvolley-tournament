@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { onMatchUpdate } from '../services/socket'
+import { onMatchUpdate, onKnockoutUpdate } from '../services/socket'
 
 export const useMatchUpdates = (callback) => {
   useEffect(() => {
@@ -28,6 +28,6 @@ export const useKnockoutUpdates = (callback) => {
       callback(data)
     }
     
-    onMatchUpdate(handleUpdate)
+    onKnockoutUpdate(handleUpdate)
   }, [callback])
 }
