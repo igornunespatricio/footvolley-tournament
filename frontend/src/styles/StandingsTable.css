@@ -4,6 +4,7 @@
   border-radius: 8px;
   box-shadow: var(--shadow-sm);
   margin-bottom: 2rem;
+  overflow-x: auto;
 }
 
 .standings-container h3 {
@@ -23,7 +24,7 @@
 }
 
 .standings-table th {
-  padding: 1rem;
+  padding: 0.75rem 0.5rem;
   text-align: left;
   font-weight: 600;
   font-size: 0.95rem;
@@ -54,7 +55,7 @@
 }
 
 .standings-table td {
-  padding: 1rem;
+  padding: 0.75rem 0.5rem;
   color: var(--text-primary);
 }
 
@@ -67,8 +68,7 @@
 
 .team-cell {
   font-weight: 600;
-  max-width: 250px;
-  word-break: break-word;
+  white-space: nowrap;
 }
 
 .stat-cell {

@@ -102,7 +102,7 @@ asc-championship/
 - ✅ Real-time standings updates
 - ✅ Modal forms for add/edit/delete
 - ✅ Responsive design (mobile/tablet/desktop)
-- ✅ Status badges (pending/in-progress/completed)
+- ✅ Status badges (pending/completed)
 - ✅ Live match score display
 - ✅ Animated transitions
 - ✅ WebSocket integration

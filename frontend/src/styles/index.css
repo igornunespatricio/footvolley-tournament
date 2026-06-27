@@ -99,10 +99,9 @@ html, body, #root {
 
 .app-main {
   flex: 1;
-  max-width: 1200px;
   width: 100%;
   margin: 0 auto;
-  padding: 2rem;
+  padding: 2rem 0;
 }
 
 .app-footer {
@@ -143,6 +142,6 @@ html, body, #root {
   }
 
   .app-main {
-    padding: 1rem;
+    padding: 1rem 0;
   }
 }

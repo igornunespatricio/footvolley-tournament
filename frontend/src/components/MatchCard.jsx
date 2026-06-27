@@ -1,19 +1,58 @@
 import '../styles/MatchCard.css'
 
-export const MatchCard = ({ match, onEdit, onDelete }) => {
-  const getStatusColor = (status) => {
-    switch(status) {
-      case 'completed': return 'completed'
-      case 'in_progress': return 'in-progress'
-      default: return 'pending'
-    }
+const PencilIcon = () => (
+  <svg className="action-icon" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zm17.71-10.04a1 1 0 0 0 0-1.41L18.2 3.29a1 1 0 0 0-1.41 0l-1.83 1.83 3.75 3.75 2-1.66z" />
+  </svg>
+)
+
+const TrashIcon = () => (
+  <svg className="action-icon" viewBox="0 0 24 24" aria-hidden="true">
+    <path d="M6 7h12l-1 14H7L6 7zm3-3h6l1 2H8l1-2zM4 6h16v2H4V6z" />
+  </svg>
+)
+
+export const MatchCard = ({ match, onEdit, onDelete, compact = false }) => {
+  const getStatusVariant = (status) => {
+    return status === 'completed' ? 'completed' : 'pending'
+  }
+
+  const statusVariant = getStatusVariant(match.status)
+  const statusLabel = statusVariant === 'completed' ? 'Completed' : 'Pending'
+
+  if (compact) {
+    return (
+      <div className={`match-card compact ${statusVariant}`}>
+        <div className="match-line">
+          <div className="match-info">
+            <span className="group-inline">{match.group_name || 'Group'}</span>
+            <span className="team-inline">{match.team_a_name || 'Team A'}</span>
+            <span className="score-inline">{match.score_a}</span>
+            <span className="x-divider">X</span>
+            <span className="score-inline">{match.score_b}</span>
+            <span className="team-inline">{match.team_b_name || 'Team B'}</span>
+          </div>
+          <div className="match-meta">
+            <span className={`status-inline ${statusVariant}`}>{statusLabel}</span>
+            <div className="match-actions inline-actions">
+              <button className="btn-edit" aria-label="Edit match" title="Edit match" onClick={() => onEdit(match)}>
+                <PencilIcon />
+              </button>
+              <button className="btn-delete" aria-label="Delete match" title="Delete match" onClick={() => onDelete(match.id)}>
+                <TrashIcon />
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (
-    <div className={`match-card ${getStatusColor(match.status)}`}>
+    <div className={`match-card ${statusVariant}`}>
       <div className="match-header">
-        <span className={`status-badge ${getStatusColor(match.status)}`}>
-          {match.status.replace('_', ' ').toUpperCase()}
+        <span className={`status-badge ${statusVariant}`}>
+          {statusLabel.toUpperCase()}
         </span>
       </div>
 
@@ -32,8 +71,12 @@ export const MatchCard = ({ match, onEdit, onDelete }) => {
       </div>
 
       <div className="match-actions">
-        <button className="btn-edit" onClick={() => onEdit(match)}>Edit</button>
-        <button className="btn-delete" onClick={() => onDelete(match.id)}>Delete</button>
+        <button className="btn-edit" aria-label="Edit match" title="Edit match" onClick={() => onEdit(match)}>
+          <PencilIcon />
+        </button>
+        <button className="btn-delete" aria-label="Delete match" title="Delete match" onClick={() => onDelete(match.id)}>
+          <TrashIcon />
+        </button>
       </div>
     </div>
   )

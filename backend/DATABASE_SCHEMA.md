@@ -30,7 +30,7 @@ CREATE TABLE group_matches (
   team_b_id INTEGER NOT NULL REFERENCES teams(id),
   score_a INTEGER DEFAULT 0,
   score_b INTEGER DEFAULT 0,
-  status VARCHAR(20) DEFAULT 'pending', -- pending, in_progress, completed
+  status VARCHAR(20) DEFAULT 'pending', -- pending, completed
   scheduled_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -64,7 +64,7 @@ CREATE TABLE knockout_matches (
   score_a INTEGER DEFAULT 0,
   score_b INTEGER DEFAULT 0,
   winner_id INTEGER REFERENCES teams(id),
-  status VARCHAR(20) DEFAULT 'pending', -- pending, in_progress, completed
+  status VARCHAR(20) DEFAULT 'pending', -- pending, completed
   scheduled_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP

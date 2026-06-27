@@ -24,7 +24,7 @@ CREATE TABLE IF NOT EXISTS group_matches (
   team_b_id INTEGER NOT NULL REFERENCES teams(id),
   score_a INTEGER DEFAULT 0,
   score_b INTEGER DEFAULT 0,
-  status VARCHAR(20) DEFAULT 'pending',
+  status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'completed')),
   scheduled_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -54,11 +54,34 @@ CREATE TABLE IF NOT EXISTS knockout_matches (
   score_a INTEGER DEFAULT 0,
   score_b INTEGER DEFAULT 0,
   winner_id INTEGER REFERENCES teams(id),
-  status VARCHAR(20) DEFAULT 'pending',
+  status VARCHAR(20) DEFAULT 'pending' CHECK (status IN ('pending', 'completed')),
   scheduled_at TIMESTAMP,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+-- Normalize legacy statuses and enforce allowed values
+UPDATE group_matches
+SET status = 'pending'
+WHERE status NOT IN ('pending', 'completed');
+
+UPDATE knockout_matches
+SET status = 'pending'
+WHERE status NOT IN ('pending', 'completed');
+
+ALTER TABLE group_matches
+DROP CONSTRAINT IF EXISTS group_matches_status_check;
+
+ALTER TABLE group_matches
+ADD CONSTRAINT group_matches_status_check
+CHECK (status IN ('pending', 'completed'));
+
+ALTER TABLE knockout_matches
+DROP CONSTRAINT IF EXISTS knockout_matches_status_check;
+
+ALTER TABLE knockout_matches
+ADD CONSTRAINT knockout_matches_status_check
+CHECK (status IN ('pending', 'completed'));
 `;
 
 const teamsData = [

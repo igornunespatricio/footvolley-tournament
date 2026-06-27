@@ -1,5 +1,6 @@
 const Tournament = require('../models/tournament');
 const { broadcastMatchUpdate, broadcastKnockoutUpdate, broadcastStandingsUpdate } = require('../middleware/broadcast');
+const ALLOWED_STATUSES = new Set(['pending', 'completed']);
 
 exports.getAllTeams = async (req, res) => {
   try {
@@ -72,6 +73,10 @@ exports.updateMatch = async (req, res) => {
     
     if (scoreA === undefined || scoreB === undefined || !status) {
       return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    if (!ALLOWED_STATUSES.has(status)) {
+      return res.status(400).json({ error: 'Status must be pending or completed' });
     }
     
     const match = await Tournament.updateMatch(id, scoreA, scoreB, status);
@@ -150,6 +155,10 @@ exports.updateKnockoutMatch = async (req, res) => {
     
     if (scoreA === undefined || scoreB === undefined || !status) {
       return res.status(400).json({ error: 'Missing required fields' });
+    }
+
+    if (!ALLOWED_STATUSES.has(status)) {
+      return res.status(400).json({ error: 'Status must be pending or completed' });
     }
     
     const match = await Tournament.updateKnockoutMatch(id, scoreA, scoreB, status, winnerId || null);

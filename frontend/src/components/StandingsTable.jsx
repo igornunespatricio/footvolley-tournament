@@ -1,13 +1,13 @@
 import '../styles/StandingsTable.css'
 
-export const StandingsTable = ({ standings }) => {
+export const StandingsTable = ({ standings, title = 'Standings' }) => {
   if (!standings || standings.length === 0) {
     return <div className="standings-empty">No standings data available</div>
   }
 
   return (
     <div className="standings-container">
-      <h3>Standings</h3>
+      <h3>{title}</h3>
       <table className="standings-table">
         <thead>
           <tr>

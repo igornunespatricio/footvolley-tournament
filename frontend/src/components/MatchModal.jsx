@@ -3,13 +3,14 @@ import '../styles/Modal.css'
 
 export const MatchModal = ({ isOpen, groupId, stage, teams, onClose, onSubmit, initialData = null }) => {
   const isKnockout = !!stage
+  const isValidStatus = (status) => status === 'pending' || status === 'completed'
 
   const buildFormData = (data) => ({
     teamAId: data?.team_a_id || '',
     teamBId: data?.team_b_id || '',
     scoreA: data?.score_a ?? 0,
     scoreB: data?.score_b ?? 0,
-    status: data?.status || 'pending',
+    status: isValidStatus(data?.status) ? data.status : (data ? 'completed' : 'pending'),
     winnerId: data?.winner_id || '',
   })
 
@@ -109,7 +110,6 @@ export const MatchModal = ({ isOpen, groupId, stage, teams, onClose, onSubmit, i
               onChange={handleChange}
             >
               <option value="pending">Pending</option>
-              <option value="in_progress">In Progress</option>
               <option value="completed">Completed</option>
             </select>
           </div>

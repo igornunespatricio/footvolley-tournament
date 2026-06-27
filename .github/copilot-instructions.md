@@ -196,7 +196,7 @@ Frontend uses hardcoded API URL: `http://localhost:3001/api` (in `src/services/a
 
 ## Important Conventions
 
-- **Match Status**: Only "completed" matches update standings (values: "pending", "in_progress", "completed")
+- **Match Status**: Only "completed" matches update standings (values: "pending", "completed")
 - **Standings Calculation**: Triggered only when match marked "completed", not on every score change
 - **Team Qualification**: Top 2 teams per group by points (tiebreaker: goals_for)
 - **Knockout Pairing**: Semifinal 1: Group 1 1st vs Group 2 2nd; Semifinal 2: Group 1 2nd vs Group 2 1st; etc.

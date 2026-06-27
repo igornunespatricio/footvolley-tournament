@@ -50,7 +50,7 @@
 - [ ] All 3 groups load in selector
 - [ ] Selecting group loads matches
 - [ ] Match cards display team names, scores, status
-- [ ] Status badges show (pending, in-progress, completed)
+- [ ] Status badges show (pending, completed)
 - [ ] Add Match button opens modal
 - [ ] Edit Match button opens modal with data
 - [ ] Delete Match shows confirmation
