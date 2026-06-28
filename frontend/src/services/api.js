@@ -37,8 +37,8 @@ export const knockoutService = {
   getAll: (stage = null) => api.get('/knockout-matches', { params: { stage } }),
   create: (stage, teamAId = null, teamBId = null) =>
     api.post('/knockout-matches', { stage, teamAId, teamBId }),
-  update: (id, scoreA, scoreB, status, winnerId = null) =>
-    api.put(`/knockout-matches/${id}`, { scoreA, scoreB, status, winnerId }),
+  update: (id, scoreA, scoreB, status) =>
+    api.put(`/knockout-matches/${id}`, { scoreA, scoreB, status }),
   delete: (id) => api.delete(`/knockout-matches/${id}`),
   getQualifiedTeams: () => api.get('/qualified-teams'),
   createBracket: () => api.post('/create-knockout-bracket'),

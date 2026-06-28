@@ -151,7 +151,7 @@ exports.createKnockoutMatch = async (req, res) => {
 exports.updateKnockoutMatch = async (req, res) => {
   try {
     const { id } = req.params;
-    const { scoreA, scoreB, status, winnerId } = req.body;
+    const { scoreA, scoreB, status } = req.body;
     
     if (scoreA === undefined || scoreB === undefined || !status) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -160,8 +160,26 @@ exports.updateKnockoutMatch = async (req, res) => {
     if (!ALLOWED_STATUSES.has(status)) {
       return res.status(400).json({ error: 'Status must be pending or completed' });
     }
+
+    const existingMatch = await Tournament.getKnockoutMatchById(id);
+    if (!existingMatch) {
+      return res.status(404).json({ error: 'Knockout match not found' });
+    }
+
+    let winnerId = null;
+    if (status === 'completed') {
+      if (!existingMatch.team_a_id || !existingMatch.team_b_id) {
+        return res.status(400).json({ error: 'Both teams must be set before completing a match' });
+      }
+
+      if (Number(scoreA) === Number(scoreB)) {
+        return res.status(400).json({ error: 'Knockout completed matches cannot end in a tie' });
+      }
+
+      winnerId = Number(scoreA) > Number(scoreB) ? existingMatch.team_a_id : existingMatch.team_b_id;
+    }
     
-    const match = await Tournament.updateKnockoutMatch(id, scoreA, scoreB, status, winnerId || null);
+    const match = await Tournament.updateKnockoutMatch(id, scoreA, scoreB, status, winnerId);
     
     // Handle match progression (QF → SF → F)
     const progressionResult = await Tournament.handleKnockoutMatchCompletion(id);

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { knockoutService, teamService } from '../services/api'
 import { MatchCard } from '../components/MatchCard'
 import { MatchModal } from '../components/MatchModal'
@@ -18,6 +18,8 @@ export const KnockoutStage = ({ groups, onKnockoutUpdated }) => {
   const [modalStage, setModalStage] = useState(null)
   const [loading, setLoading] = useState(false)
   const [bracketGenerated, setBracketGenerated] = useState(false)
+  const [championCelebration, setChampionCelebration] = useState(null)
+  const celebrationTimeoutRef = useRef(null)
 
   useKnockoutUpdates((data) => {
     loadKnockoutMatches()
@@ -27,6 +29,14 @@ export const KnockoutStage = ({ groups, onKnockoutUpdated }) => {
     loadKnockoutMatches()
     loadQualifiedTeams()
     loadAllTeams()
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (celebrationTimeoutRef.current) {
+        clearTimeout(celebrationTimeoutRef.current)
+      }
+    }
   }, [])
 
   const loadAllTeams = async () => {
@@ -59,6 +69,20 @@ export const KnockoutStage = ({ groups, onKnockoutUpdated }) => {
     } finally {
       setLoading(false)
     }
+  }
+
+  const showChampionCelebration = (teamName, finalId) => {
+    setChampionCelebration({
+      teamName: teamName || 'Champion',
+      finalId,
+    })
+
+    if (celebrationTimeoutRef.current) {
+      clearTimeout(celebrationTimeoutRef.current)
+    }
+    celebrationTimeoutRef.current = setTimeout(() => {
+      setChampionCelebration(null)
+    }, 4500)
   }
 
   const loadQualifiedTeams = async () => {
@@ -105,14 +129,31 @@ export const KnockoutStage = ({ groups, onKnockoutUpdated }) => {
   }
 
   const handleUpdateMatch = async (formData) => {
+    if (
+      formData.status === 'completed' &&
+      Number(formData.scoreA) === Number(formData.scoreB)
+    ) {
+      alert('Knockout matches cannot finish in a tie. Please set a winning score.')
+      return
+    }
+
     try {
-      await knockoutService.update(
+      const response = await knockoutService.update(
         editingMatch.id,
         formData.scoreA,
         formData.scoreB,
-        formData.status,
-        formData.winnerId || null
+        formData.status
       )
+
+      if (editingMatch?.stage === 'final' && formData.status === 'completed') {
+        const isTeamAWinner = Number(formData.scoreA) > Number(formData.scoreB)
+        const winnerName = isTeamAWinner
+          ? (editingMatch.team_a_name || response.data?.match?.team_a_name)
+          : (editingMatch.team_b_name || response.data?.match?.team_b_name)
+
+        showChampionCelebration(winnerName, editingMatch.id)
+      }
+
       setEditingMatch(null)
       setIsModalOpen(false)
       setModalStage(null)
@@ -152,6 +193,13 @@ export const KnockoutStage = ({ groups, onKnockoutUpdated }) => {
   return (
     <div className="knockout-stage">
       <h2>Knockout Stage 🏆</h2>
+      {championCelebration && (
+        <div className="champion-celebration" role="status" aria-live="polite">
+          <div className="champion-burst" aria-hidden="true" />
+          <span className="champion-label">🏆 Champions:</span>
+          <strong>{championCelebration.teamName}</strong>
+        </div>
+      )}
 
       {/* Qualification Info & Bracket Generation */}
       <div className="qualification-section">
@@ -215,9 +263,10 @@ export const KnockoutStage = ({ groups, onKnockoutUpdated }) => {
                     <MatchCard
                       key={match.id}
                       match={match}
+                      compact
+                      compactLabel={`QF ${idx + 1}`}
                       onEdit={() => handleOpenModal('quarterfinal', match)}
                       onDelete={handleDeleteMatch}
-                      matchNumber={idx + 1}
                     />
                   ))
                 ) : (
@@ -237,9 +286,10 @@ export const KnockoutStage = ({ groups, onKnockoutUpdated }) => {
                     <MatchCard
                       key={match.id}
                       match={match}
+                      compact
+                      compactLabel={`SF ${idx + 1}`}
                       onEdit={() => handleOpenModal('semifinal', match)}
                       onDelete={handleDeleteMatch}
-                      matchNumber={idx + 1}
                     />
                   ))
                 ) : (
@@ -259,9 +309,10 @@ export const KnockoutStage = ({ groups, onKnockoutUpdated }) => {
                     <MatchCard
                       key={match.id}
                       match={match}
+                      compact
+                      compactLabel="Final"
                       onEdit={() => handleOpenModal('final', match)}
                       onDelete={handleDeleteMatch}
-                      isChampionship
                     />
                   ))
                 ) : (

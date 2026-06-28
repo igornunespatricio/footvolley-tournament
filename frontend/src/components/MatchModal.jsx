@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react'
 import '../styles/Modal.css'
 
 export const MatchModal = ({ isOpen, groupId, stage, teams, onClose, onSubmit, initialData = null }) => {
-  const isKnockout = !!stage
   const isValidStatus = (status) => status === 'pending' || status === 'completed'
 
   const buildFormData = (data) => ({
@@ -11,7 +10,6 @@ export const MatchModal = ({ isOpen, groupId, stage, teams, onClose, onSubmit, i
     scoreA: data?.score_a ?? 0,
     scoreB: data?.score_b ?? 0,
     status: isValidStatus(data?.status) ? data.status : (data ? 'completed' : 'pending'),
-    winnerId: data?.winner_id || '',
   })
 
   const [formData, setFormData] = useState(() => buildFormData(initialData))
@@ -36,8 +34,6 @@ export const MatchModal = ({ isOpen, groupId, stage, teams, onClose, onSubmit, i
   }
 
   if (!isOpen) return null
-
-  const selectedTeams = teams.filter(t => t.id === formData.teamAId || t.id === formData.teamBId)
 
   return (
     <div className="modal-overlay" onClick={onClose}>
@@ -113,23 +109,6 @@ export const MatchModal = ({ isOpen, groupId, stage, teams, onClose, onSubmit, i
               <option value="completed">Completed</option>
             </select>
           </div>
-
-          {isKnockout && formData.status === 'completed' && (
-            <div className="form-group">
-              <label>Winner</label>
-              <select
-                name="winnerId"
-                value={formData.winnerId}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select Winner</option>
-                {selectedTeams.map(team => (
-                  <option key={team.id} value={team.id}>{team.name}</option>
-                ))}
-              </select>
-            </div>
-          )}
 
           <div className="modal-actions">
             <button type="button" className="btn-cancel" onClick={onClose}>Cancel</button>

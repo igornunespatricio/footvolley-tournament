@@ -8,6 +8,12 @@ services:
       POSTGRES_DB: ${DB_NAME:-footvolley}
     ports:
       - "${DB_PORT:-5432}:5432"
+    # limit cpu and memory usage for the postgres service
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -33,6 +39,12 @@ services:
       NODE_ENV: ${NODE_ENV:-development}
     ports:
       - "${BACKEND_PORT:-3001}:${BACKEND_PORT:-3001}"
+    # limit cpu and memory usage for the backend service
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M
     depends_on:
       postgres:
         condition: service_healthy
@@ -52,6 +64,12 @@ services:
       VITE_API_URL: ${VITE_API_URL:-http://localhost:3001/api}
     ports:
       - "${FRONTEND_PORT:-3000}:80"
+    # limit cpu and memory usage for the frontend service
+    deploy:
+      resources:
+        limits:
+          cpus: '0.50'
+          memory: 512M 
     depends_on:
       - backend
     networks:

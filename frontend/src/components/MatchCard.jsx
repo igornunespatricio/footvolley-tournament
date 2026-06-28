@@ -12,7 +12,7 @@ const TrashIcon = () => (
   </svg>
 )
 
-export const MatchCard = ({ match, onEdit, onDelete, compact = false }) => {
+export const MatchCard = ({ match, onEdit, onDelete, compact = false, compactLabel = null }) => {
   const getStatusVariant = (status) => {
     return status === 'completed' ? 'completed' : 'pending'
   }
@@ -21,11 +21,13 @@ export const MatchCard = ({ match, onEdit, onDelete, compact = false }) => {
   const statusLabel = statusVariant === 'completed' ? 'Completed' : 'Pending'
 
   if (compact) {
+    const inlineLabel = compactLabel || match.group_name || 'Match'
+
     return (
       <div className={`match-card compact ${statusVariant}`}>
         <div className="match-line">
           <div className="match-info">
-            <span className="group-inline">{match.group_name || 'Group'}</span>
+            <span className="group-inline">{inlineLabel}</span>
             <span className="team-inline">{match.team_a_name || 'Team A'}</span>
             <span className="score-inline">{match.score_a}</span>
             <span className="x-divider">X</span>
