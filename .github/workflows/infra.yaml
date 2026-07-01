@@ -7,27 +7,22 @@
 name: Example AWS Bucket Upload
 on: push
 env:
-  BUCKET_NAME: "test-bucket-834657348"
   AWS_REGION: "us-east-1"
   AWS_ROLE_ARN: "arn:aws:iam::667902538623:role/github-actions-role"
 
-# permission can be added at job level or workflow level
+# Need ID token write permission to use OIDC
 permissions:
-  id-token: write # This is required for requesting the JWT
-  contents: read # This is required for actions/checkout
+  id-token: write
 jobs:
-  S3PackageUpload:
+  run_job_with_aws:
     runs-on: ubuntu-latest
     steps:
-      - name: Git clone the repository
-        uses: actions/checkout@v6
-      - name: configure aws credentials
-        uses: aws-actions/configure-aws-credentials@e3dd6a429d7300a6a4c196c26e071d42e0343502
+      - name: Configure AWS Credentials
+        uses: aws-actions/configure-aws-credentials@v6.1.0
         with:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
-          role-session-name: samplerolesession
           aws-region: ${{ env.AWS_REGION }}
-      # Upload a file to AWS s3
-      - name: Copy index.html to s3
+      - name: Additional steps
         run: |
-          aws s3 cp ./index.html s3://${{ env.BUCKET_NAME }}/
+          # Your commands that require AWS credentials
+          aws sts get-caller-identity
