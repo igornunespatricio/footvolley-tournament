@@ -59,9 +59,11 @@ services:
     build:
       context: ./frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_URL: ${VITE_API_URL:-http://localhost:3001/api}
     container_name: footvolley-frontend
-    environment:
-      VITE_API_URL: ${VITE_API_URL:-http://localhost:3001/api}
+    # environment:
+    #   VITE_API_URL: ${VITE_API_URL:-http://localhost:3001/api}
     ports:
       - "${FRONTEND_PORT:-3000}:80"
     # limit cpu and memory usage for the frontend service

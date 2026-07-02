@@ -6,6 +6,8 @@ COPY package*.json ./
 RUN npm ci
 
 COPY . .
+ARG VITE_API_URL
+ENV VITE_API_URL=$VITE_API_URL
 RUN npm run build
 
 # Production stage
@@ -22,24 +24,24 @@ RUN echo 'server { \
     index index.html; \
     \
     location / { \
-        try_files $uri $uri/ /index.html; \
+    try_files $uri $uri/ /index.html; \
     } \
     \
     location /api { \
-        proxy_pass http://backend:3001/api; \
-        proxy_http_version 1.1; \
-        proxy_set_header Upgrade $http_upgrade; \
-        proxy_set_header Connection "upgrade"; \
+    proxy_pass http://backend:3001/api; \
+    proxy_http_version 1.1; \
+    proxy_set_header Upgrade $http_upgrade; \
+    proxy_set_header Connection "upgrade"; \
     } \
     \
     location /socket.io { \
-        proxy_pass http://backend:3001/socket.io; \
-        proxy_http_version 1.1; \
-        proxy_buffering off; \
-        proxy_set_header Upgrade $http_upgrade; \
-        proxy_set_header Connection "Upgrade"; \
+    proxy_pass http://backend:3001/socket.io; \
+    proxy_http_version 1.1; \
+    proxy_buffering off; \
+    proxy_set_header Upgrade $http_upgrade; \
+    proxy_set_header Connection "Upgrade"; \
     } \
-}' > /etc/nginx/conf.d/default.conf
+    }' > /etc/nginx/conf.d/default.conf
 
 EXPOSE 80
 

@@ -4,8 +4,11 @@
 # They are provided by a third-party and are governed by
 # separate terms of service, privacy policy, and support
 # documentation.
-name: Example AWS Bucket Upload
-on: push
+name: Infrastructure Deployment Workflow
+on:
+  push:
+    branches:
+      - main
 env:
   AWS_REGION: "us-east-1"
   AWS_ROLE_ARN: "arn:aws:iam::667902538623:role/github-actions-role"
@@ -22,7 +25,6 @@ jobs:
         with:
           role-to-assume: ${{ env.AWS_ROLE_ARN }}
           aws-region: ${{ env.AWS_REGION }}
-      - name: Additional steps
+      - name: Check AWS Identity
         run: |
-          # Your commands that require AWS credentials
           aws sts get-caller-identity
